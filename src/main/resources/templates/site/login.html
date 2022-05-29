@@ -63,12 +63,14 @@
 		<div class="main">
 			<div class="container pl-5 pr-5 pt-3 pb-3 mt-3 mb-3">
 				<h3 class="text-center text-info border-bottom pb-3">登&nbsp;&nbsp;录</h3>
-				<form class="mt-5">				
+				<form class="mt-5" method="post" th:action="@{/login}">
 					<div class="form-group row">
 						<label for="username" class="col-sm-2 col-form-label text-right">账号:</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control is-invalid" id="username" placeholder="请输入您的账号!" required>
-							<div class="invalid-feedback">
+							<input type="text" th:class="|form-control ${usernameMsg!=null?'is-invalid':''}|"
+								   th:value="${param.username}"
+								   id="username" name="username" placeholder="请输入您的账号!" required>
+							<div class="invalid-feedback" th:text="${usernameMsg}">
 								该账号不存在!
 							</div>
 						</div>
@@ -76,8 +78,10 @@
 					<div class="form-group row mt-4">
 						<label for="password" class="col-sm-2 col-form-label text-right">密码:</label>
 						<div class="col-sm-10">
-							<input type="password" class="form-control is-invalid" id="password" placeholder="请输入您的密码!" required>
-							<div class="invalid-feedback">
+							<input type="password" th:class="|form-control ${passwordMsg!=null?'is-invalid':''}|"
+								   th:value="${param.password}"
+								   id="password" name="password" placeholder="请输入您的密码!" required>
+							<div class="invalid-feedback" th:text="${passwordMsg}">
 								密码长度不能小于8位!
 							</div>							
 						</div>
@@ -85,20 +89,29 @@
 					<div class="form-group row mt-4">
 						<label for="verifycode" class="col-sm-2 col-form-label text-right">验证码:</label>
 						<div class="col-sm-6">
-							<input type="text" class="form-control is-invalid" id="verifycode" placeholder="请输入验证码!">
-							<div class="invalid-feedback">
+							<!--name="code" name属性的值与控制层方法中接收参数要保持一致-->
+							<input type="text" th:class="|form-control ${verifycodeMsg!=null?'is-invalid':''}|"
+								   id="verifycode" name="verifycode" placeholder="请输入验证码!">
+							<div class="invalid-feedback" th:text="${verifycodeMsg}">
 								验证码不正确!
 							</div>
 						</div>
 						<div class="col-sm-4">
-							<img th:src="@{/img/captcha.png}" style="width:100px;height:40px;" class="mr-2"/>
-							<a href="javascript:;" class="font-size-12 align-bottom">刷新验证码</a>
+							<!--@{/kaptcha}会自动补充为/community/kaptcha-->
+							<img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
+							<!--refresh_kaptcha()是js函数-->
+							<!--每次点击刷新验证码·，都会重新去访问controller层的kaptcha方法-->
+							<a href="javascript:refresh_kaptcha();" class="font-size-12 align-bottom">刷新验证码</a>
 						</div>
 					</div>				
 					<div class="form-group row mt-4">
 						<div class="col-sm-2"></div>
 						<div class="col-sm-10">
-							<input type="checkbox" id="remember-me" checked="checked">
+							<!-- th:checked="${param.rememberme}中param.rememberme表示请求request中的参数rememberme-->
+							<!--controller中用对象接收参数可以被封装到model中，模板引擎中通过model可以直接调用对象中的参数-->
+							<!--但是这里的username password verifycode rememberme 等参数都是单独接收的，所以这里不能通过model调用，可以通过param去request请求中获得这些参数-->
+							<input type="checkbox" id="remember-me" name="rememberme"
+								   th:checked="${param.rememberme}">
 							<label class="form-check-label" for="remember-me">记住我</label>
 							<a href="forget.html" class="text-danger float-right">忘记密码?</a>
 						</div>
@@ -179,5 +192,16 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
+	<script>
+		function refresh_kaptcha(){
+			/*路径上拼接的参数p是用来欺骗浏览器的;
+			有的智能浏览器认为图片是静态资源;
+			不拼接随机数的话点击刷新验证码时，路径也不会改变，还是/community/kaptcha ，那么浏览就会认为没什么变化，偷懒不去访问;
+			所以可以在后面拼接一个参数，但是服务端不会去处理这个拼接的参数（对于路径上拼接的参数，服务端不处理它，随它去）。
+			*/
+			var path = CONTEXT_PATH+"/kaptcha?p="+Math.random();
+			$("#kaptcha").attr("src",path);/*$("#kaptcha")是id选择器，选择刷新验证码那里的image标签（这个标签的id是kaptcha）*/
+		}
+	</script>
 </body>
 </html>

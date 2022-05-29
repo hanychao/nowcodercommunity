@@ -1,6 +1,8 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
@@ -110,6 +112,54 @@ public class UserService implements CommunityConstant {
         }else{
             return ACTIVATION_FAILURE;
         }
+    }
+
+    @Autowired(required = false)
+    private LoginTicketMapper loginTicketMapper;
+    public Map<String,Object> login(String username, String password, int expiredSeconds){
+        Map<String,Object> map = new HashMap<>();
+
+        //判断空值
+        if(StringUtils.isBlank(username)){
+            map.put("usernameMsg","输入用户名不能为空！");
+            return map;
+        }
+        if(StringUtils.isBlank(password)){
+            map.put("passwordMsg","输入密码不能为空！");
+            return map;
+        }
+
+        //验证输入账号是否存在
+        User user = userMapper.selectByName(username);
+        if(user==null){
+            map.put("usernameMsg","该账号不存在！");
+            return map;
+        }
+        //验证账号状态
+        if (user.getStatus()==0){
+            map.put("usernameMsg","该账号未激活");
+            return map;
+        }
+
+        //验证密码
+        password = CommunityUtil.md5(password+user.getSalt());
+        if (!password.equals(user.getPassword())){
+            map.put("passwordMsg","密码不正确！");
+            return map;
+        }
+
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(CommunityUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+        map.put("ticket",loginTicket.getTicket());
+        return map;
+    }
+
+    public void logout(String ticket){
+        loginTicketMapper.updateStatus(ticket,1);
     }
 
 }

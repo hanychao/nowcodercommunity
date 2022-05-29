@@ -11,4 +11,8 @@ public interface CommunityConstant {
     int ACTIVATION_REPEAT = 1;//重复激活
 
     int ACTIVATION_FAILURE = 2;//激活失败
+
+    int DEFAULT_EXPIRED_SECONDS = 3600 * 12; //登陆凭证的默认保存时间
+
+    int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 10;//勾选记住我时，登陆凭证的保存时间
 }
