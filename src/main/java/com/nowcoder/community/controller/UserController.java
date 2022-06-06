@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
  * @author hyc
@@ -116,6 +117,21 @@ public class UserController {
             }
         } catch (IOException e) {
             logger.error("读取头像失败：" + e.getMessage());
+        }
+    }
+
+    @LoginRequired
+    @RequestMapping(path = "/pswModify",method = RequestMethod.POST)
+    public String changePsw(Model model, String oldPsw, String newPsw){
+        User user = hostHolder.getUser();
+        //这里不需要对用户判空，因为加了LoginRequired注解，未登陆的用户无法访问当前方法
+        Map<String, Object> map = userService.changePsw(user, oldPsw, newPsw);
+        if(map.isEmpty()){//修改密码成功
+            return "redirect:/logout";
+        }else{
+            model.addAttribute("oldPswMsg",map.get("oldPswMsg"));
+            model.addAttribute("newPswMsg",map.get("newPsw"));
+            return "/site/setting";
         }
     }
 }

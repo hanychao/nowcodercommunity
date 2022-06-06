@@ -6,7 +6,9 @@ import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
+import com.nowcoder.community.util.HostHolder;
 import com.nowcoder.community.util.MailClient;
+import org.apache.catalina.Host;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -168,6 +170,32 @@ public class UserService implements CommunityConstant {
 
     public int updateHeader(int userId, String headerUrl){
         return userMapper.updateHeader(userId,headerUrl);
+    }
+
+    public Map<String,Object> changePsw(User user, String oldPsw, String newPsw){
+        Map<String,Object> map = new HashMap<>();
+
+        if(oldPsw==null){
+            map.put("oldPswMsg","请先输入原密码！");
+            return map;
+        }
+        oldPsw = CommunityUtil.md5(oldPsw+user.getSalt());
+        if(!oldPsw.equals(user.getPassword())){
+            map.put("oldPswMsg","原密码输入有误！");
+            return map;
+        }
+        if (newPsw==null){
+            map.put("newPsw","请输入您想要重新设置的新密码！");
+            return map;
+        }
+        newPsw = CommunityUtil.md5(newPsw+user.getSalt());
+        if(oldPsw.equals(newPsw)){
+            map.put("newPsw","您想要设置的密码与原密码相同，请重新输入！");
+            return map;
+        }
+
+        userMapper.updatePassword(user.getId(),newPsw);
+        return map;
     }
 
 }
