@@ -105,8 +105,8 @@ public class UserController {
         response.setContentType("image/" + suffix);//响应图片
 
         try (
-                OutputStream os = response.getOutputStream();//将文件输出到浏览器的输出流
                 FileInputStream fis = new FileInputStream(fileName);//文件的输入流，读取文件
+                OutputStream os = response.getOutputStream();//将文件输出到浏览器的输出流
         ) {
 
             //建立一个缓冲区，每次输出缓冲区大小的文件，这样就不用一个字节一个字节的输出，而是一批一批地输出

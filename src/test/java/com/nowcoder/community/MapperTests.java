@@ -74,6 +74,7 @@ public class MapperTests {
         System.out.println(rows);
     }
 
+
     @Autowired(required = false)
     private LoginTicketMapper loginTicketMapper;
     @Test
@@ -94,5 +95,20 @@ public class MapperTests {
         loginTicketMapper.updateStatus("abc", 1);
         loginTicket = loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket);
+    }
+
+    @Test
+    public void testInsertDiscussPost(){
+        DiscussPost discussPost = new DiscussPost();
+        discussPost.setUserId(101);
+        discussPost.setTitle("测试插入帖子");
+        discussPost.setContent("新插入的帖子");
+        discussPost.setStatus(0);
+        discussPost.setType(0);
+        discussPost.setCreateTime(new Date());
+        discussPost.setCommentCount(0);
+        discussPost.setScore(0);
+        int num = discussPostMapper.insertDiscussPost(discussPost);
+        System.out.println(num);
     }
 }
