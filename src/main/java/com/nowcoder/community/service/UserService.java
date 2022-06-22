@@ -170,6 +170,10 @@ public class UserService implements CommunityConstant {
         return userMapper.updateHeader(userId,headerUrl);
     }
 
+    public User findUserByName(String username){
+        return userMapper.selectByName(username);
+    }
+
     public Map<String,Object> changePsw(User user, String oldPsw, String newPsw){
         Map<String,Object> map = new HashMap<>();
 
