@@ -99,7 +99,7 @@
 						<div class="col-sm-4">
 							<!--@{/kaptcha}会自动补充为/community/kaptcha-->
 							<img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
-							<!--refresh_kaptcha()是js函数-->
+							<!--refresh_kaptcha()是js函数-->  
 							<!--每次点击刷新验证码·，都会重新去访问controller层的kaptcha方法-->
 							<a href="javascript:refresh_kaptcha();" class="font-size-12 align-bottom">刷新验证码</a>
 						</div>
