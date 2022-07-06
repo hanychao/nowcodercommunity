@@ -46,8 +46,9 @@ public class RedisKeyUtil {
     public static String getTicketKey(String ticket){
         return PREFIX_TICKET+SPLIT+ticket;
     }
+
     public static String getUserKey(int  userId){
-        return PREFIX_TICKET+SPLIT+userId;
+        return PREFIX_USER+SPLIT+userId;
     }
 
 }

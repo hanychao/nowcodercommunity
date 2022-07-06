@@ -34,14 +34,17 @@ public class ServiceLogAspect {
     }
 
     @Before("pointcut()")
-    public void before(JoinPoint joinPoint){// 参数：连接点,指代程序织入的目标
+    public void before(JoinPoint joinPoint) {// 参数：连接点,指代程序织入的目标
         // 用户[1.2.3.4],在[xxx],访问了[com.nowcoder.community.service.xxx()].
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return;
+        }
         HttpServletRequest request = attributes.getRequest();
         String ip = request.getRemoteHost();
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         // 得到该连接点的 类名 和 方法名
-        String target = joinPoint.getSignature().getDeclaringTypeName()+"."+joinPoint.getSignature().getName();
+        String target = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
         logger.info(String.format("用户[%s],在[%s],访问了[%s].", ip, now, target));
     }
 }

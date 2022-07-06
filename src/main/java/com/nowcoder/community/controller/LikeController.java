@@ -1,7 +1,10 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.service.LikeService;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,29 +21,45 @@ import java.util.Map;
  * @create 2022-06-25 20:53
  */
 @Controller
-public class LikeController {
+public class LikeController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    private EventProducer eventProducer;
 
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
-    public String like(int entityType, int entityId,int entityUserId){
+    public String like(int entityType, int entityId, int entityUserId, int discussPostId) {
         User user = hostHolder.getUser();
 
         //修改用户点赞状态
-        likeService.like(user.getId(),entityType,entityId,entityUserId);
+        likeService.like(user.getId(), entityType, entityId, entityUserId);
 
         //赞的数量
-        long likeCount = likeService.findEntityLikeCount(entityType,entityId);
+        long likeCount = likeService.findEntityLikeCount(entityType, entityId);
 
         //点赞状态--是否点赞
-        int likeStatus = likeService.findEntityLikeStatus(user.getId(),entityType,entityId);
+        int likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("likeCount",likeCount);
-        map.put("likeStatus",likeStatus);
-        return CommunityUtil.getJSONString(0,null,map);
+        Map<String, Object> map = new HashMap<>();
+        map.put("likeCount", likeCount);
+        map.put("likeStatus", likeStatus);
+
+        //触发点赞事件
+        if (likeStatus == 1) {
+            Event event = new Event();
+            event.
+                    setTopic(TOPIC_LIKE).
+                    setUserId(hostHolder.getUser().getId()).
+                    setEntityType(entityType).
+                    setEntityId(entityId).
+                    setEntityUserId(entityUserId).
+                    setData("discussPostId",discussPostId);
+            eventProducer.fireEvent(event);
+        }
+
+        return CommunityUtil.getJSONString(0, null, map);
     }
 }
