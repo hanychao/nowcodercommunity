@@ -33,4 +33,16 @@ public interface MessageMapper {
 
     //将当前私信详情页面的未读私信更新为已读
     int updateStatus(List<Integer> ids, int status);
+
+    //查询用户某个主题最新的通知
+    Message selectLatestNotice(int userId, String topic);
+
+    //查询用户的总通知数量
+    int selectNoticeCount(int userId, String topic);
+
+    //查询用户未读的通知数量
+    int selectNoticeUnreadCount(int userId, String topic);
+
+    //查询用户某个主题所包含的所有通知
+    List<Message> selectNotices(int userId, String topic, int offset, int limit);
 }

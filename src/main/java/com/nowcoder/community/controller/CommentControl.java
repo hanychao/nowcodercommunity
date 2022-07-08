@@ -47,7 +47,7 @@ public class CommentControl implements CommunityConstant {
                 setUserId(hostHolder.getUser().getId()).
                 setEntityType(comment.getEntityType()).
                 setEntityId(comment.getEntityId()).
-                setData("discussPostId", discussPostId);//由于在关注触发事件时，不需要跳转到帖子详情页面，所以帖子id放到了map里，而不是单独作为一个属性赋值
+                setData("postId", discussPostId);//由于在关注触发事件时，不需要跳转到帖子详情页面，所以帖子id放到了map里，而不是单独作为一个属性赋值
 
         if(event.getEntityType()==ENTITY_TYPE_POST){
             DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
