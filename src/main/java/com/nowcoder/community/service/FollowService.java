@@ -2,9 +2,7 @@ package com.nowcoder.community.service;
 
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityConstant;
-import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.RedisKeyUtil;
-import net.bytebuddy.dynamic.scaffold.inline.RedefinitionDynamicTypeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;

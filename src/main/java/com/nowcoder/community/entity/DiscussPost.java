@@ -7,6 +7,7 @@ import java.util.Date;
  * @create 2022-05-20 21:44
  */
 public class DiscussPost {
+
     private int id;
     private int userId;
     private String title;

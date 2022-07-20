@@ -6,6 +6,10 @@ import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CookieUtil;
 import com.nowcoder.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,6 +44,18 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
             if (loginTicket != null && loginTicket.getStatus() == 0 && loginTicket.getExpired().after(new Date())) {
                 User user = userService.findUserById(loginTicket.getUserId());
                 hostHolder.setUsers(user);
+                /**
+                 * 会从SecurityContextHolder中拿到SecurityContext，进而获取用户权限。
+                 * SpringSecurity原本是在认证完成后会返回一个Authentication接口的实现类（例如UsernamePasswordAuthenticationToken，这个类中封装了认证信息）
+                 * ，并通过SecurityContextHolder存入SecurityContext中。
+                 * 由于本项目中的认证（账号密码的验证）是自己定义的，所以不是直接重写的SpringSecurity中的认证方法
+                 * ，为了能遵守SpringSecurity授权的规则，所以在这里构建包含用户认证信息的类对象，通过SecurityContextHolder存入SecurityContext中。
+                 */
+                // 构建用户认证的结果,并存入SecurityContext,以便于Security进行授权.
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        user, user.getPassword(),userService.getAuthorities(user.getId())
+                );
+                SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
             }
         }
         return true;
@@ -62,5 +78,6 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();
+        SecurityContextHolder.clearContext();
     }
 }
