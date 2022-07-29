@@ -28,6 +28,8 @@ public interface CommunityConstant {
 
     String TOPIC_FOLLOW = "follow";//主题：关注
 
+    String TOPIC_SHARE = "share";//主题：分享
+
     int SYSTEM_USER_ID = 1;//系统用户ID
 
     /**
