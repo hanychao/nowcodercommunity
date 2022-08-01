@@ -40,7 +40,7 @@ public class MapperTests {
 
     @Test
     public void testInsertUser() {
-        User user = new User();
+       /* User user = new User();
         user.setUsername("test");
         user.setPassword("123456");
         user.setSalt("abc");
@@ -50,7 +50,12 @@ public class MapperTests {
         user.setCreateTime(new Date());
         int rows = userMapper.insertUser(user);
         System.out.println(rows);
-        System.out.println(user.getId());
+        System.out.println(user.getId());*/
+        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(111, 0, Integer.MAX_VALUE, 0);
+        for (DiscussPost discussPost:discussPosts){
+            discussPostMapper.updateStatus(discussPost.getId(),2);
+        }
+
     }
 
     @Test
